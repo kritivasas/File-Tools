@@ -1,0 +1,10 @@
+This package impliments several file operations under the umbrella
+of File::Tools. It replaces the old File::Copy package and impliments
+new functionality as well.
+
+You should just do a make install, as there is nothing to build. The
+documentation will be intalled at this time, as well.
+
+This package requires perl5.002 or later.
+
+			-AJS <ajs@ajs.com>
