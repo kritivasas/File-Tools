@@ -1,6 +1,15 @@
-Copy.pm
+Build.PL
 Makefile.PL
-MANIFEST
 README
-Recurse.pm
-Tools.pm
+Changes
+MANIFEST			This list of files
+META.yml
+
+lib/File/Tools.pm
+
+t/01-load.t
+t/cut.t
+t/iterators.t
+t/oop.t
+t/tar.t
+t/uniq.t

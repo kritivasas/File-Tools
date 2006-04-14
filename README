@@ -1,10 +1,445 @@
-This package impliments several file operations under the umbrella
-of File::Tools. It replaces the old File::Copy package and impliments
-new functionality as well.
+SYNOPSIS
+    use File::Tools qw(:all);
 
-You should just do a make install, as there is nothing to build. The
-documentation will be intalled at this time, as well.
+    my $str = cut {bytes => "3-7"}, "123456789";
 
-This package requires perl5.002 or later.
+WARNING
+    This is Alpha version of the module. Interface of the functions will
+    change and some of the functions might even disappear.
 
-			-AJS <ajs@ajs.com>
+REASON
+    Why this module?
+
+    *   When I am writing filesystem related applications I always need to
+        load several standard modules such as File::Basename, Cwd,
+        File::Copy, File::Path and maybe others in order to have all the
+        relevant functions. I'd rather just use one module that will bring
+        all the necessary functions.
+
+    *   On the other hand when I am in OOP mood I want all these functions
+        to be methods of a shell-programming-object. (Though probably Pipe
+        will answer this need better)
+
+    *   There are many useful commands available for the Unix Shell
+        Programmer that usually need much more coding than the Unix
+        counterpart, specifically most of the Unix commands can work
+        recoursively on directory structures while in Perl one has to
+        implement these. There are some additional modules providing this
+        functionality but then we get back again to the previous issue.
+
+    The goal of this module is to make it even easier to write scripts in
+    Perl that were traditionally easier to write in Shell.
+
+    Partially we will provide functions similar to existing UNIX commands
+    and partially we will provide explanation on how to rewrite various
+    Shell constructs in Perl.
+
+    There is also a UNIX Reconstruction Project,
+    http://search.cpan.org/dist/ppt/ I hope we can borrow many code snippets
+    from that project.
+
+DESCRIPTTION
+  awk
+    Not implemented.
+
+  basename
+    Given a path to a file or directory returns the last part of the path.
+
+    See File::Basename for details.
+
+  cat
+    Not implemented.
+
+    Slurp mode to read in a file:
+
+     my $content;
+     if (open my $fh, "<", "filename") {
+       local $/ = undef;
+       $content = <$fh>;
+     }
+
+    To process all the files on the command line and print them to the
+    screen.
+
+     while (my $line = <>) {
+       print $line;
+     }
+
+    In shell cut is usually used to concatenate two or more files. That can
+    be achived with the previous code redirecting it to a file using >
+    command line redirector.
+
+  cd
+    Use the built in chdir command.
+
+  chmod
+    For now use the built in chmod command.
+
+    The built in chmod command does not accept any parameters and instead of
+    the a+w strings one has to give the exact octet:
+
+     chmod 0755, @files;
+
+    For recursive application use the find function.
+
+     find( sub {chmod $mode, $_}, @dirs);
+
+    We are exporting the chmod of File::chomd
+
+  chown
+    For now use the built in chown command.
+
+    It accepts only UID and GID values, but it is easy to retreive them:
+
+     chown $uid, $gid, @files;
+     chown getpwnam($user), getgrname($group), @files;
+
+    For recursive application use the find function.
+
+     find( sub {chown $uid, $gid, $_}, @dirs);
+
+  cmp
+    Not implemented.
+
+    See File::Compare
+
+  compress
+    Not implemented.
+
+    See some of the external modules
+
+  copy
+    Copy one file to another name.
+
+    For details see File::Copy
+
+    For now this does not provide recourseive copy. Later we will provide
+    that too using either one of these modules: File::NCopy or
+    File::Copy::Recursive.
+
+  cut
+    Partially implemented but probably will be removed.
+
+    Returns some of the fields of a given string (or strings). As a UNIX
+    command it can work on every line on STDIN or in a list of files. When
+    implementing it in Perl the most difficult part is to parse the
+    parameters in order to account for all the overlapping possibilities
+    which should actually be considered as user error.
+
+      cut -b 1 file
+      cut -b 3,7 file
+      cut -b 3-7 file
+      cut -b -4,7-
+      order within the parameter string does not matter
+
+    The same can be done in Perl for any single range: substr $str, $start,
+    $length;
+
+  cp
+    See copy instead.
+
+  cwd
+    Returns the current working directory similar to the pwd UNIX command.
+
+    See Cwd for details.
+
+  date
+    Can be used to display time in the same formats the date command would
+    do.
+
+    See POSIX::strftime for details.
+
+  df
+    Not implemented.
+
+  diff
+    Not implemented.
+
+    See Text::Diff for a possible implementation.
+
+  dirname
+    Given a path to a file or a directory this function returns the
+    directory part. (the whole string excpet the last part)
+
+    See File::Basename for details.
+
+  dirs
+    Not implemented.
+
+  dos2unix
+    Not implemented.
+
+  du
+    Not implemented.
+
+  echo
+    Not implemented.
+
+    The print function in Perl prints to the screen (STDOUT or STDERR).
+
+    If the given string is in double quotes "" the backslash-escaped
+    characters take effect (-e mode).
+
+    Within single quotes '', they don't have an effect.
+
+    For printing new-line include \n withn the double quotes.
+
+  ed - editor
+    Not implemented.
+
+  expr
+    Not implemented.
+
+    In Perl there is no need to use a special function to evaluate an
+    expression.
+
+   match
+   substr - built in substr
+   index - built in index
+   length - built in length
+  file
+    Not implemented.
+
+  fileparse
+    This is not a UNIX command but it is provided by the same standard
+    File::Basename we already use.
+
+  find
+    See File::Find for details.
+
+    See also find2perl
+
+  move
+    Move a file from one directory to any other directory with any name.
+
+    One can use the built in rename function but it only works on the same
+    filesystem.
+
+    See File::Copy for details.
+
+  getopts
+    Not implemented.
+
+    See Getops::Std and Getops::Long for possible implementations we will
+    use here.
+
+  grep
+    Not implemented.
+
+    A basic implementation of grep in Perl would be the following code:
+
+     my $p = shift;
+     while (<>) {
+       print if /$p/
+     }
+
+    but within real code we are going to be more interested doing such
+    operation on a list of values (possibly file lines) already in memory in
+    an array or piped in from an external file. For this one can use the
+    grep build in function.
+
+     @selected = grep /REGEX/, @original;
+
+  gzip
+    Not implemented.
+
+  head
+    Not implemented.
+
+  id
+    Normally the id command shows the current username, userid, group and
+    gid. In Perl one can access the current ireal UID as $< and the
+    effective UID as $>. The real GID is $( and the effective GID is $) of
+    the current user.
+
+    To get the username and the group name use the getpwuid($uid) and
+    getpwgrid($gid) functions respectively in scalar context.
+
+  kill
+    See built in kill function.
+
+  less
+    Not implemented.
+
+    This is used in interactive mode only. No need to provide this
+    functionality here.
+
+  ln
+    Not implemented.
+
+    See the build in link and symlink functions.
+
+  ls
+    Not implemented.
+
+    See glob and the opendir/readdir pair for listing filenames use stat and
+    lstat to retreive information needed for the -l display mode of ls.
+
+  mail
+    Sending e-mails.
+
+  mkdir
+    Not implemented.
+
+    See the built in mkdir function.
+
+    See also mkpath
+
+  more
+    Not implemented.
+
+    This is used in interactive mode only. No need to provide this
+    functionality here.
+
+  mv
+    See move instead.
+
+  paste
+    Not implemented.
+
+  patch
+    Not implemented.
+
+  popd
+    Change directory to last place where pushd was called.
+
+  pushd
+    Change directory and save the current directory in a stack. See also
+    popd.
+
+  printf
+    Not implemented.
+
+    See the build in printf function.
+
+  ps
+    Not implemented.
+
+  pwd
+    See <cwd> instead.
+
+  read
+    Not implemented.
+
+     read x y z
+
+    will read in a line from the keyboard (STDIN) and put the first word
+    into x, the second word in y and the third word in z
+
+    In perl one can implement similar behavior by the following code:
+
+     my ($x, $y, $z) = split /\s+/, <STDIN>;
+
+  rm
+    Not implemented.
+
+    For removing files, see the built in unlink function.
+
+    For removing directories see the built in rmdir function.
+
+    For removing trees (rm -r) see rmtree
+
+  rmdir
+    Not implemented.
+
+    For removing empty directories use the built in rmdir function.
+
+    For removing tree see rmtree
+
+  rmtree
+    Removes a whole directory tree. Similar to rm -rf. See also File::Path
+
+  sed
+    Not implemented.
+
+  shift
+    Not implemented.
+
+  sort
+    Not implemented.
+
+    See the built in sort function.
+
+  tail
+    Not implemented.
+
+    Return the last n lines of a file, n defaults to 10
+
+  tar
+    Not implemented.
+
+    See Archive::Tar
+
+  touch
+    Not implemented.
+
+  tr
+    Not implemented.
+
+    See the built in tr function.
+
+  umask
+    Not implemented.
+
+  uniq
+    The uniq unix command eliminates duplicate values following each other
+    but does not enforce uniqueness through the whole input. For examle for
+    the following list of input values: a a a b a a a ths UNIX uniq would
+    return a b a
+
+    For completeness we also provide uniqunix that behaves just like the
+    UNIX command.
+
+  uniqunix
+    Similar to the UNIX uniq command.
+
+  unix2dos
+    Not implemented.
+
+  wc
+    Not implemented.
+
+  who
+    Not implemented.
+
+  who am i
+    Not implemented.
+
+  zip
+    Not implemented.
+
+  redirections and pipe
+    < > < |
+
+    Ctr-Z, & fg, bg set %ENV
+
+  Arguments
+    $#, $*, $1, $2, ...
+
+    $$ - is also available in Perl as $$
+
+  Other
+    $? error code of last command
+
+    if test ... string operators
+
+Development
+    The Subversion repository is here:
+    http://svn1.hostlocal.com/szabgab/trunk/File-Tools/
+
+AUTHOR
+    Gabor Szabo <gabor@pti.co.il>
+
+Copyright
+    Copyright 2006 by Gabor Szabo <gabor@pti.co.il>.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
+    See http://www.perl.com/perl/misc/Artistic.html
+
+SEE ALSO
+    Tim Maher has a book called Miniperl http://books.perl.org/book/240 that
+    might be very useful. I have not seen it yet, but according to what I
+    know about it it should be a good one.
+
