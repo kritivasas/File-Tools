@@ -13,6 +13,8 @@ my @all = qw(
       fileparse
       find
       move
+      popd
+      pushd
       rm
       rmtree
       uniq
@@ -23,7 +25,7 @@ our %EXPORT_TAGS = (
     all => \@all,
 );
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 my @DIRS; # used to implement pushd/popd
 
@@ -32,7 +34,7 @@ sub _not_implemented {
 }
 =head1 NAME
 
-File::Tools - UNIX tools implemented as Perl Modules
+File::Tools - UNIX tools implemented as Perl Modules and made available to other platforms as well
 
 =head1 SYNOPSIS
 
@@ -80,9 +82,6 @@ Partially we will provide functions similar to existing UNIX commands
 and partially we will provide explanation on how to rewrite various Shell 
 constructs in Perl.
 
-There is also a UNIX Reconstruction Project, http://search.cpan.org/dist/ppt/
-I hope we can borrow many code snippets from that project.
-
 =head1 DESCRIPTTION
 
 =head2 awk
@@ -111,13 +110,7 @@ sub basename {
 
 Not implemented.
 
-Slurp mode to read in a file:
-
- my $content;
- if (open my $fh, "<", "filename") {
-   local $/ = undef;
-   $content = <$fh>;
- }
+See L<slurp>
 
 To process all the files on the command line and print them to the screen.
 
@@ -132,6 +125,18 @@ with the previous code redirecting it to a file using > command line redirector.
 sub cat {
   _not_implemented();
 }
+
+
+=head2 catfile
+
+Concatenating parts of a path in a platform independent way. See also L<File::Spec>
+
+=cut
+sub catfile {
+  require File::Spec;
+  File::Spec->catfile(@_);
+}
+
 
 
 =head2 cd
@@ -156,7 +161,10 @@ For recursive application use the L<find> function.
 
  find( sub {chmod $mode, $_}, @dirs);
 
-We are exporting the chmod of L<File::chomd>
+We are exporting the chmod of L<File::chmod>
+
+On Windows there is no chmod command but ther are some modes that can be changed.
+We should include this functionality too. For now see the Win32::* namespace for this task.
 
 =cut
 sub chmod {
@@ -180,8 +188,9 @@ For recursive application use the L<find> function.
 
  find( sub {chown $uid, $gid, $_}, @dirs);
 
-=cut
+Windows: See chmod above.
 
+=cut
 
 
 
@@ -310,6 +319,8 @@ sub date {
 
 Not implemented.
 
+See L<Filesys::DiskSpace>
+
 =cut
 sub df {
   _not_implemented();
@@ -359,6 +370,8 @@ Not implemented.
 
 Not implemented.
 
+L<Filesys::DiskUsage>
+
 =cut
 
 
@@ -392,13 +405,25 @@ Not implemented.
 
 In Perl there is no need to use a special function to evaluate an expression.
 
-=head3 match
+=over 4
 
-=head3 substr - built in substr
+=item *
 
-=head3 index - built in index
+match
 
-=head3 length - built in length
+=item *
+
+substr - built in substr
+
+=item *
+
+index - built in index
+
+=item *
+
+length - built in length
+
+=back
 
 =cut
 
@@ -431,6 +456,8 @@ See L<File::Find> for details.
 
 See also find2perl
 
+TODO: Probably will be replaced by L<File::Find::Rule>
+
 =cut
 sub find {
   require File::Find;
@@ -438,6 +465,11 @@ sub find {
 }
 
 
+=head2 ftp
+
+See L<Net::FTP>
+
+=cut
 
 =head2 move
 
@@ -482,6 +514,8 @@ on a list of values (possibly file lines) already in memory in an array or
 piped in from an external file. For this one can use the grep build in function.
 
  @selected = grep /REGEX/, @original;
+
+TODO: See also L<File::Grep>
 
 =cut
 
@@ -558,6 +592,8 @@ display mode of ls.
 
 Sending e-mails.
 
+See L<Mail::Sendmail> and L<Net::SMTP>
+
 =cut
 sub mail {
   require Mail::Sendmail;
@@ -606,6 +642,11 @@ Not implemented.
 
 =cut
 
+=head2 ping
+
+See L<Net::Ping>
+
+=cut
 
 =head2 popd
 
@@ -613,9 +654,12 @@ Change directory to last place where pushd was called.
 
 =cut
 sub popd {
-  my ($dir) = @_;
-  my $d = pop @DIRS;
-  chdir $d;
+  my $dir = pop @DIRS;
+  if (chdir $dir) {
+    return cwd();
+  } else {
+    return;
+  }
 }
 
 =head2 pushd
@@ -626,7 +670,11 @@ Change directory and save the current directory in a stack. See also L<popd>.
 sub pushd {
   my ($dir) = @_;
   push @DIRS, cwd;
-  chdir $dir;
+  if (chdir $dir) {
+    return cwd();
+  } else {
+    return;
+  }
 }
 
 =head2 printf
@@ -648,10 +696,9 @@ Not implemented.
 
 =head2 pwd
 
-See <cwd> instead.
+See L<cwd> instead.
 
 =cut
-
 
 
 =head2 read
@@ -680,6 +727,8 @@ For removing files, see the built in L<unlink> function.
 For removing directories see the built in L<rmdir> function.
 
 For removing trees (rm -r) see L<rmtree>
+
+See also L<File::Remove>
 
 =cut
 sub rm {
@@ -714,6 +763,15 @@ sub rmtree {
   File::Path::rmtree(@_);
 }
 
+
+=head2 scp
+
+See also L<Net::SCP>
+
+=cut
+
+
+
 =head2 sed
 
 Not implemented.
@@ -723,6 +781,36 @@ sub sed {
   _not_implemented();
 }
 
+
+=head2 slurp
+
+=cut
+sub slurp {
+  my $content = "";
+  foreach my $filename (@_) {
+    if (open my $fh, "<", $filename) {
+      local $/ = undef;
+      $content .= <$fh>;
+    } else {
+      warn "Could not open '$filename'\n";
+    }
+  }
+  return $content;
+}
+
+
+=head2 snmp
+
+L<Net::SNMP>
+
+=cut
+
+
+=head2 ssh
+
+L<Net::SSH>
+
+=cut
 
 
 =head2 shift
@@ -764,6 +852,19 @@ See L<Archive::Tar>
 
 =cut
 
+=head2 telnet
+
+L<Net::Telnet>
+
+=cut
+
+
+=head2 time
+
+See also L<Benchmark>
+
+=cut
+
 
 =head2 touch
 
@@ -791,6 +892,8 @@ For examle for the following list of input values:  a a a b a a a
 ths UNIX uniq would return                          a b a
 
 For completeness we also provide uniqunix that behaves just like the UNIX command.
+
+See also L<Array::Unique>
 
 =cut
 sub uniq {
@@ -882,6 +985,17 @@ See http://www.perl.com/perl/misc/Artistic.html
 
 Tim Maher has a book called Miniperl http://books.perl.org/book/240 that might be very useful.
 I have not seen it yet, but according to what I know about it it should be a good one.
+
+L<http://perllinux.sourceforge.net/>
+
+The UNIX Reconstruction Project, L<http://search.cpan.org/dist/ppt/>
+
+
+L<Pipe>
+
+Related Discussions:
+
+http://www.perlmonks.org/?node_id=541826
 
 =cut
 

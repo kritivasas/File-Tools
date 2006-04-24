@@ -34,10 +34,6 @@ REASON
     and partially we will provide explanation on how to rewrite various
     Shell constructs in Perl.
 
-    There is also a UNIX Reconstruction Project,
-    http://search.cpan.org/dist/ppt/ I hope we can borrow many code snippets
-    from that project.
-
 DESCRIPTTION
   awk
     Not implemented.
@@ -50,13 +46,7 @@ DESCRIPTTION
   cat
     Not implemented.
 
-    Slurp mode to read in a file:
-
-     my $content;
-     if (open my $fh, "<", "filename") {
-       local $/ = undef;
-       $content = <$fh>;
-     }
+    See slurp
 
     To process all the files on the command line and print them to the
     screen.
@@ -68,6 +58,10 @@ DESCRIPTTION
     In shell cut is usually used to concatenate two or more files. That can
     be achived with the previous code redirecting it to a file using >
     command line redirector.
+
+  catfile
+    Concatenating parts of a path in a platform independent way. See also
+    File::Spec
 
   cd
     Use the built in chdir command.
@@ -84,7 +78,11 @@ DESCRIPTTION
 
      find( sub {chmod $mode, $_}, @dirs);
 
-    We are exporting the chmod of File::chomd
+    We are exporting the chmod of File::chmod
+
+    On Windows there is no chmod command but ther are some modes that can be
+    changed. We should include this functionality too. For now see the
+    Win32::* namespace for this task.
 
   chown
     For now use the built in chown command.
@@ -97,6 +95,8 @@ DESCRIPTTION
     For recursive application use the find function.
 
      find( sub {chown $uid, $gid, $_}, @dirs);
+
+    Windows: See chmod above.
 
   cmp
     Not implemented.
@@ -152,6 +152,8 @@ DESCRIPTTION
   df
     Not implemented.
 
+    See Filesys::DiskSpace
+
   diff
     Not implemented.
 
@@ -171,6 +173,8 @@ DESCRIPTTION
 
   du
     Not implemented.
+
+    Filesys::DiskUsage
 
   echo
     Not implemented.
@@ -193,10 +197,14 @@ DESCRIPTTION
     In Perl there is no need to use a special function to evaluate an
     expression.
 
-   match
-   substr - built in substr
-   index - built in index
-   length - built in length
+    *   match
+
+    *   substr - built in substr
+
+    *   index - built in index
+
+    *   length - built in length
+
   file
     Not implemented.
 
@@ -208,6 +216,11 @@ DESCRIPTTION
     See File::Find for details.
 
     See also find2perl
+
+    TODO: Probably will be replaced by File::Find::Rule
+
+  ftp
+    See Net::FTP
 
   move
     Move a file from one directory to any other directory with any name.
@@ -239,6 +252,8 @@ DESCRIPTTION
     grep build in function.
 
      @selected = grep /REGEX/, @original;
+
+    TODO: See also File::Grep
 
   gzip
     Not implemented.
@@ -278,6 +293,8 @@ DESCRIPTTION
   mail
     Sending e-mails.
 
+    See Mail::Sendmail and Net::SMTP
+
   mkdir
     Not implemented.
 
@@ -300,6 +317,9 @@ DESCRIPTTION
   patch
     Not implemented.
 
+  ping
+    See Net::Ping
+
   popd
     Change directory to last place where pushd was called.
 
@@ -316,7 +336,7 @@ DESCRIPTTION
     Not implemented.
 
   pwd
-    See <cwd> instead.
+    See cwd instead.
 
   read
     Not implemented.
@@ -339,6 +359,8 @@ DESCRIPTTION
 
     For removing trees (rm -r) see rmtree
 
+    See also File::Remove
+
   rmdir
     Not implemented.
 
@@ -349,8 +371,18 @@ DESCRIPTTION
   rmtree
     Removes a whole directory tree. Similar to rm -rf. See also File::Path
 
+  scp
+    See also Net::SCP
+
   sed
     Not implemented.
+
+  slurp
+  snmp
+    Net::SNMP
+
+  ssh
+    Net::SSH
 
   shift
     Not implemented.
@@ -369,6 +401,12 @@ DESCRIPTTION
     Not implemented.
 
     See Archive::Tar
+
+  telnet
+    Net::Telnet
+
+  time
+    See also Benchmark
 
   touch
     Not implemented.
@@ -389,6 +427,8 @@ DESCRIPTTION
 
     For completeness we also provide uniqunix that behaves just like the
     UNIX command.
+
+    See also Array::Unique
 
   uniqunix
     Similar to the UNIX uniq command.
@@ -442,4 +482,14 @@ SEE ALSO
     Tim Maher has a book called Miniperl http://books.perl.org/book/240 that
     might be very useful. I have not seen it yet, but according to what I
     know about it it should be a good one.
+
+    <http://perllinux.sourceforge.net/>
+
+    The UNIX Reconstruction Project, <http://search.cpan.org/dist/ppt/>
+
+    Pipe
+
+    Related Discussions:
+
+    http://www.perlmonks.org/?node_id=541826
 

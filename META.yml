@@ -1,8 +1,8 @@
 --- #YAML:1.0
 name: File-Tools
-version: 0.01
+version: 0.02
 author:
   - Gabor Szabo <gabor@pti.co.il>
-abstract: UNIX tools implemented as Perl Modules
+abstract: 
 license: perl
 generated_by: Module::Build version 0.2612, without YAML.pm
