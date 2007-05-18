@@ -34,7 +34,7 @@ REASON
     and partially we will provide explanation on how to rewrite various
     Shell constructs in Perl.
 
-DESCRIPTTION
+DESCRIPTION
   awk
     Not implemented.
 
@@ -64,28 +64,13 @@ DESCRIPTTION
     File::Spec
 
   cd
-    Use the built in chdir command.
+    Use the built in chdir function.
 
   chmod
-    For now use the built in chmod command.
-
-    The built in chmod command does not accept any parameters and instead of
-    the a+w strings one has to give the exact octet:
-
-     chmod 0755, @files;
-
-    For recursive application use the find function.
-
-     find( sub {chmod $mode, $_}, @dirs);
-
-    We are exporting the chmod of File::chmod
-
-    On Windows there is no chmod command but there are some modes that can
-    be changed. We should include this functionality too. For now see the
-    Win32::* namespace for this task.
+    Use the built in chmod function.
 
   chown
-    For now use the built in chown command.
+    For now use the built in chown function.
 
     It accepts only UID and GID values, but it is easy to retreive them:
 
@@ -301,7 +286,11 @@ DESCRIPTTION
 
     See the built in mkdir function.
 
-    See also mkpath
+    See also "mkpath"
+
+  mkpath
+    Create a directory with all its parent directories. See File::Path for
+    details.
 
   more
     Not implemented.
@@ -467,6 +456,10 @@ DESCRIPTTION
 Development
     The Subversion repository is here:
     http://svn1.hostlocal.com/szabgab/trunk/File-Tools/
+
+TODO
+    File::Basename::fileparse_set_fstype File::Compare::compare_text
+    File::Compare::cmp File::Copy::syscopy File::Find File::Spec File::Temp
 
 AUTHOR
     Gabor Szabo <gabor@pti.co.il>

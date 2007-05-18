@@ -2,19 +2,19 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'PL_FILES' => {},
-          'INSTALLDIRS' => 'site',
           'NAME' => 'File::Tools',
           'VERSION_FROM' => 'lib/File/Tools.pm',
           'PREREQ_PM' => {
+                           'Cwd' => '0',
+                           'File::Basename' => '0',
                            'File::Copy' => '0',
-                           'Test::More' => '0.47',
-                           'POSIX' => '0',
                            'File::Find' => '0',
                            'File::Path' => '0',
-                           'File::Basename' => '0',
-                           'File::chmod' => '0',
-                           'Cwd' => '0'
-                         }
+                           'POSIX' => '0',
+                           'Test::More' => '0.47'
+                         },
+          'INSTALLDIRS' => 'site',
+          'EXE_FILES' => [],
+          'PL_FILES' => {}
         )
 ;

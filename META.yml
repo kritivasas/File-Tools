@@ -1,8 +1,26 @@
---- #YAML:1.0
+---
 name: File-Tools
-version: 0.03
+version: 0.04
 author:
-  - Gabor Szabo <gabor@pti.co.il>
-abstract: 
+  - 'Gabor Szabo <gabor@pti.co.il>'
+abstract: UNIX tools implemented as Perl Modules and made available to other platforms as well
 license: perl
-generated_by: Module::Build version 0.2612, without YAML.pm
+resources:
+  license: http://dev.perl.org/licenses/
+requires:
+  Cwd: 0
+  File::Basename: 0
+  File::Copy: 0
+  File::Find: 0
+  File::Path: 0
+  POSIX: 0
+build_requires:
+  Test::More: 0.47
+provides:
+  File::Tools:
+    file: lib/File/Tools.pm
+    version: 0.04
+generated_by: Module::Build version 0.2808
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2
