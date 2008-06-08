@@ -1,6 +1,6 @@
 ---
 name: File-Tools
-version: 0.04
+version: 0.05
 author:
   - 'Gabor Szabo <gabor@pti.co.il>'
 abstract: UNIX tools implemented as Perl Modules and made available to other platforms as well
@@ -13,13 +13,16 @@ requires:
   File::Copy: 0
   File::Find: 0
   File::Path: 0
+  File::Temp: 0
   POSIX: 0
+  perl: 5.006
 build_requires:
   Test::More: 0.47
+  Test::NoWarnings: 0
 provides:
   File::Tools:
     file: lib/File/Tools.pm
-    version: 0.04
+    version: 0.05
 generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

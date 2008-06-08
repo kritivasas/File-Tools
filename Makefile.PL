@@ -10,8 +10,10 @@ WriteMakefile
                            'File::Copy' => '0',
                            'File::Find' => '0',
                            'File::Path' => '0',
+                           'File::Temp' => '0',
                            'POSIX' => '0',
-                           'Test::More' => '0.47'
+                           'Test::More' => '0.47',
+                           'Test::NoWarnings' => '0'
                          },
           'INSTALLDIRS' => 'site',
           'EXE_FILES' => [],
